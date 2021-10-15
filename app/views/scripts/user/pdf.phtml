@@ -1,0 +1,34 @@
+<?php
+$html='
+<table>
+    <tr>
+        <td>Film</td>
+        <td>Quantité</td>
+    </tr>';
+foreach ($this->panier as $key =>$panier){
+    $html.='<tr>
+            <td>'.$panier['film']->titre.' </td>
+            <td>'.$panier['quantite'].'</td>
+            </tr>';
+}
+$html.='</table>';
+
+ob_start();
+echo $html;
+$content = ob_get_clean();
+$html2pdf = new HTML2PDF('P', 'letter', 'fr', true, 'ISO-8859-15');
+$html2pdf->pdf->SetDisplayMode('real');
+$html2pdf->pdf->SetTitle ('FACTURE',true);
+$html2pdf->setDefaultFont('Arial');
+$html2pdf->writeHTML($content);
+
+$namePdf = 'facture-'.$_SESSION['user']['profil']->id.'.pdf';
+@unlink('fc/'.$namePdf);
+$html2pdf->Output('fc/'.$namePdf, 'F');
+?>
+<script>
+    var namePdf = '<?php echo $namePdf;?>';
+    var url = window.location.href;
+    url = url.replace('/pdf', '');
+    window.location = url+'/fc/'+namePdf;
+</script>

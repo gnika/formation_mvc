@@ -1,0 +1,17 @@
+<h1>Ajouter une catégorie</h1>
+<?php if($this->insertReturn>0){
+    ?>
+    <div class="alert alert-success"><strong>Félicitations !</strong> La catégorie a été ajoutée avec succès</div>
+<?php
+}elseif ($this->insertReturn===false){
+    ?>
+    <div class="alert alert-danger"><strong>ERREUR !</strong> La catégorie n'a pas pu être ajoutée</div>
+    <?php
+}
+?>
+<form method="POST" action="<?php echo WEB_ROOT; ?>/add/categorie" class="form-horizontal">
+    <div class="form-group">
+        <label for="categorie">Catégorie:</label><input type="text" class="form-control" value="<?php echo $this->categ;?>" id="categorie" name="categorie">
+    </div>
+    <button type="submit" id="ajax" class="btn btn-primary">Submit</button>
+</form>

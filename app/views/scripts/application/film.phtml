@@ -1,0 +1,184 @@
+<?php if($this->commInsert>0){
+    $succes ='Le commentaire a été laissé avec succès';
+    ?>
+    <div class="alert alert-success"><strong>Félicitations !</strong> <?php echo $succes;?></div>
+    <?php
+}elseif ($this->commInsert===false){
+    ?>
+    <div class="alert alert-danger"><strong>ERREUR !</strong> Le commentaire n'a pas pu être ajouté</div>
+    <?php
+}
+?>
+<div class="hide"></div>
+    <div class="row marketing jumbotron">
+        <div class="col-lg-8">
+            <h1 class="display-3"><?php echo $this->film->titre;?></h1>
+            <p class="lead"><?php echo $this->film->description;?></p>
+
+            <p><?php $date = new DateTime($this->film->date_sortie);
+                echo '<label>Date de sortie : </label> '. $date->format('d/m/Y'); ?></p>
+
+            <p>
+                <?php
+                foreach($this->categs as $categ)
+                    $categs.= $categ->nom.', ';
+                echo '<label>Catégories : </label> '.substr($categs, 0, -2);
+                ?>
+            </p>
+
+<?php  if($this->user!=''){ ?>
+            <p><button class="panier btn btn-primary btn-sm" role="button">
+                    <i class="fas fa-cart-plus"></i> <strong>Ajouter au panier</strong>
+                </button>
+            </p>
+<?php } ?>
+        </div>
+        <div class="col-lg-3">
+            <img width="300" height="300" src="<?php echo WEB_ROOT; ?>/images/film/<?php echo $this->film->image;?>"/>
+        </div>
+    </div>
+
+
+<input type="hidden" id="id" value="<?php echo $this->id;?>" />
+
+<?php
+$note = 0;
+if(count($this->comms)>0) { ?>
+
+<label>NOTE MOYENNE : </label>
+<p>
+    <?php
+        foreach ($this->comms as $comm)
+            $note += $comm->note;
+        echo $note / $this->nbcomms;
+    }?>
+</p>
+
+<p>
+    <label>COMMENTAIRES</label>
+
+    <?php
+    echo '<ul class="list-group">';
+
+    foreach($this->comms as $comm) {
+        $note+=$comm->note;
+        echo '<li class="list-group-item">
+                <span class="class="pull-left">
+                 <img src="images/user/' . $comm->avatar . '" class="img-responsive img-circle" style="width:35px;height:auto; display: inline">
+                </span>
+                <span class="pull-center">'
+            . $comm->commentaire . '
+            </span>
+                <span class="pull-right">'
+            . $comm->note . '
+            </span></li>';
+    }
+    echo '</ul>';
+    ?>
+</p>
+
+
+<p>
+<!--http://babylon-design.com/exemples/jquery-stars/index.php-->
+   <form action="" method="POST">
+    <div class="form-group">
+        <label for="comment">Laisser une note :</label>
+        <textarea class="form-control" name="comment" rows="5" id="comment"></textarea>
+    </div>
+
+
+    <ul class="notes-echelle js">
+        <li class="note-off">
+            <label for="note01" title="Note : 1 sur 5">1</label>
+            <input type="radio" name="optradio" id="note01" value="1">
+        </li>
+        <li class="note-off">
+            <label for="note02" title="Note : 2 sur 5">2</label>
+            <input type="radio" name="optradio" id="note02" value="2">
+        </li>
+        <li class="note-off">
+            <label for="note03" title="Note : 3 sur 5">3</label>
+            <input type="radio" name="optradio" id="note03" value="3">
+        </li>
+        <li class="note-off">
+            <label for="note04" title="Note : 4 sur 5">4</label>
+            <input type="radio" name="optradio" id="note04" value="4">
+        </li>
+        <li class="note-off">
+            <label for="note05" title="Note : 5 sur 5">5</label>
+            <input type="radio" name="optradio" id="note05" value="5">
+        </li>
+    </ul>
+
+
+    <div class="clear"></div><br/>
+    <button type="submit" class="btn btn-primary float-right">Laisser un commentaire</button>
+    <input type="hidden" name="id" value="<?php echo $this->id;?>" />
+    </form>
+</p>
+    <script>
+        $('.panier').click(function() {
+
+                var id = $('#id').val();
+                $.ajax({
+                    method: "GET",
+                    url: "ajaxpanier?add="+id
+                })
+                    .done(function( msg ) {
+                            $('.hide').attr('class', 'alert alert-success');
+                            $('.alert-success').html('Ajout au panier effectué');
+
+                            if($('.nbPanier').length==''){
+                            $('.float-left.menu-panier').after('<i class="float-left fas fa-certificate"></i>' +
+                                '<span class="nbPanier">1</span>');
+                            }else
+                                $('.nbPanier').html(parseInt($('.nbPanier').html(), 10)+1);
+                    });
+
+        });
+    </script>
+
+
+
+<script>
+    $(document).ready(function() {
+
+        $("ul.notes-echelle").addClass("js");
+        $("ul.notes-echelle li").addClass("note-off");
+
+        $("ul.notes-echelle input")
+            .focus(function() {
+                $(this).parents("ul.notes-echelle").find("li").removeClass("note-focus");
+                $(this).parent("li").addClass("note-focus");
+                $(this).parent("li").nextAll("li").addClass("note-off");
+                $(this).parent("li").prevAll("li").removeClass("note-off");
+                $(this).parent("li").removeClass("note-off");
+            })
+            .blur(function() {
+                $(this).parents("ul.notes-echelle").find("li").removeClass("note-focus");
+                if($(this).parents("ul.notes-echelle").find("li input:checked").length == 0) {
+                    $(this).parents("ul.notes-echelle").find("li").addClass("note-off");
+                }
+            })
+            .click(function() {
+                $(this).parents("ul.notes-echelle").find("li").removeClass("note-checked");
+                $(this).parent("li").addClass("note-checked");
+            });
+
+        $("ul.notes-echelle li").mouseover(function() {
+            $(this).nextAll("li").addClass("note-off");
+            $(this).prevAll("li").removeClass("note-off");
+            $(this).removeClass("note-off");
+        });
+
+        $("ul.notes-echelle").mouseout(function() {
+            $(this).children("li").addClass("note-off");
+            $(this).find("li input:checked").parent("li").trigger("mouseover");
+        });
+
+        $("ul.notes-echelle input:checked").parent("li").trigger("mouseover");
+        $("ul.notes-echelle input:checked").trigger("click");
+
+    });
+</script>
+</script>

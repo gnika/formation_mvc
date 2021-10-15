@@ -1,0 +1,68 @@
+<h1>Ajouter un film</h1>
+<?php if($this->reussite>0){
+    ($this->film->id!='') ?  $succes ='Le film a été modifié avec succès': $succes='Le film a été ajouté avec succès';
+    ?>
+    <div class="alert alert-success"><strong>Félicitations !</strong> <?php echo $succes;?></div>
+    <?php
+}elseif ($this->reussite===false){
+    ?>
+    <div class="alert alert-danger"><strong>ERREUR !</strong> Le film n'a pas pu être ajouté/modifé</div>
+    <?php
+}
+?>
+<form method="POST" enctype="multipart/form-data" action="<?php echo WEB_ROOT; ?>/add/film" class="form-horizontal">
+    <input type="hidden" value="<?php echo $this->film->id;?>" name="id"/>
+    <div class="form-group">
+        <label for="titre">Titre : </label><input type="text" class="form-control" value="<?php echo $this->film->titre;?>" id="titre" name="titre">
+    </div>
+    <div class="form-group">
+        <input type="hidden" name="MAX_FILE_SIZE" value="200000" />
+        <label for="image">Image : </label><input type="file" name="image" id="image" />
+        <?php if($this->film->image!=''){
+            ?>
+            <img class="pull-right" width=50 height=50 src="<?php echo WEB_ROOT; ?>/images/film/<?php echo $this->film->image;?>"/>
+        <?php } ?>
+    </div>
+    <div class="form-group">
+        <label for="categorie">Catégorie : </label>
+        <?php
+        foreach ($this->cats as $cat){
+            $attr='';
+            if(count($this->categs)==0)$this->categs= array();
+            foreach( $this->categs as $categ)
+                if($categ['id'] == $cat->id)$attr='checked="checked"';
+            echo '<div class="checkbox"><label for="'.$cat->id.'">
+                <input '.$attr.' type="checkbox" name="categ[]" id="'.$cat->id.'" value="'.$cat->id.'" />'.$cat->nom
+                .'</label></div>';
+        }
+        ?>
+    </div>
+
+    <div class="form-group">
+        <label for="description">Prix :</label>
+        <div class="input-group">
+            <span class="input-group-addon">€</span>
+            <input type="number" name="prix" value="<?php echo ($this->film->prix)?$this->film->prix:20;?>" min="0" step="0.01" data-number-to-fixed="2" data-number-stepfactor="100" class="form-control currency" id="c2" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="description">Description :</label>
+        <textarea name="description" class="form-control" rows="5" id="description"><?php echo $this->film->description;?></textarea>
+    </div>
+    <div class="form-group">
+        <label for="description">Date de sortie du film :</label>
+        <div class='input-group date'>
+
+            <input id="datepickerfrom" value="<?php echo $this->film->date_sortie;?>" name="date_sortie" width="250" type="date" required />
+
+        </div>
+    </div>
+    <?php ($this->film->id!='') ?  $buttonV ='Modifier le film': $buttonV='Ajouter le film';?>
+    <button type="submit" class="btn btn-primary"><?php echo $buttonV;?></button>
+</form>
+
+<script>
+    var data = document.getElementById("datepickerfrom").value;
+    document.getElementById("datepickerfrom").valueAsDate = new Date(data);
+</script>

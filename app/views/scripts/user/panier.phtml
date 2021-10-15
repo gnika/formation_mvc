@@ -1,0 +1,110 @@
+<?php
+
+/*echo'<pre>';
+print_r($this->panier);
+echo '</pre>';*/
+?><h1>Mon panier</h1>
+<table class="table table-striped" width="647">
+    <thead>
+    <tr>
+        <th>Film</th>
+        <th>Quantité</th>
+        <th>Prix</th>
+        <th>Modifier la quantité</th>
+    </tr>
+    </thead>
+    <tbody>
+<?php
+$total = 0;
+
+foreach ($this->panier as $key =>$panier){
+    $total+=$panier['film']->prix*$panier['quantite'];
+
+    echo '<tr data-id="'.$panier['film']->id.'" class="row_'.$panier['film']->id.'">
+            <td>
+                <a href="film?id='.$panier['film']->id.'">'
+                    .$panier['film']->titre.
+                '</a>
+             </td>
+            <td>
+                <span class="quantity_'.$panier['film']->id.'">'
+                    .$panier['quantite'].
+                '</span>
+            </td>
+            <td>
+                <span class="d-none uniquprix_'.$panier['film']->id.'">'.
+                    $panier['film']->prix.
+                '</span>
+                <span class="prix_'.$panier['film']->id.'">'.
+                    $panier['film']->prix*$panier['quantite'].'
+                </span> €
+            </td>
+            <td>
+                <button id="remove_'.$panier['film']->id.'" class="btn btn-primary btn-sm fas fa-minus"></button>
+                <button data-id="'.$panier['film']->id.'" class="btn btn-primary btn-sm fas fa-plus"></button> 
+            </td>
+            </tr>';
+}
+echo '<tr><td colspan="4">
+<span class="float-right">TOTAL :
+ <span class="total">'.$total.'</span> €</span></td></tr>';
+echo '</tbody></table>';
+
+?>
+<a href="pdf" class="btn button panier btn btn-primary btn-sm"><span class="fas fa-cart-plus"></span> Envoyer le panier </a>
+
+
+<script>
+    $('.fa-plus').click(function() {
+        var id = $(this).data('id');
+        $.ajax({
+            method: "GET",
+            url: "ajaxpanier?add="+id
+        })
+            .done(function( msg ) {
+                var quantite = parseInt($('.quantity_'+id).html(), 10);
+                $('.quantity_'+id).html(quantite+1);
+                $('.nbPanier').html(parseFloat($('.nbPanier').html(), 2)+1);
+
+
+
+                $('.prix_'+id).html(
+                    parseFloat($('.quantity_'+id).html(), 2)
+                    *parseFloat($('.uniquprix_'+id).html(), 2)
+                );
+
+                var total = 0;
+                $('tr[class^="row_"]').each(function() {
+                    var id = $(this).data('id');
+                    total+=parseFloat($('.quantity_'+id).html(), 2)*parseFloat($('.uniquprix_'+id).html(), 2);
+                    $('.total').html(total);
+                });
+
+
+            });
+    });
+    $('button[id^="remove_"]').click(function() {
+        var id = $(this).attr('id');
+        var id = id.replace('remove_', '');
+        $.ajax({
+            method: "GET",
+            url: "ajaxpanier?remove="+id
+        })
+            .done(function( msg ) {
+                $('.quantity_'+id).html(parseFloat($('.quantity_'+id).html(), 2)-1);
+                if($('.quantity_'+id).html()==0)
+                    $('.row_'+id).remove();
+                $('.nbPanier').html(parseFloat($('.nbPanier').html(), 2)-1);
+
+
+                $('.prix_'+id).html(parseFloat($('.quantity_'+id).html(), 2)*parseFloat($('.uniquprix_'+id).html(), 2));
+                var total = 0;
+                $('tr[class^="row_"]').each(function() {
+                    var id = $(this).data('id');
+                    total+=parseFloat($('.quantity_'+id).html(), 2)
+                        *parseFloat($('.uniquprix_'+id).html(), 2);
+                });
+                $('.total').html(total);
+            });
+    });
+</script>

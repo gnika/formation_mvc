@@ -1,0 +1,45 @@
+<h1>Modifier la catégorie</h1>
+<div class="hide"></div>
+<form class="form-horizontal">
+    <div class="form-group">
+        <label for="categorie">Catégorie:</label><input type="text" class="form-control" value="<?php echo $this->categ->nom;?>" id="categorie" name="categorie">
+    </div>
+    <input type="hidden" id="id" value="<?php echo $this->categ->id;?>">
+    <button type="button" id="ajax" class="btn btn-primary">Submit</button>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    $('#ajax').click(function() {
+        var cat = $('#categorie').val();
+        var id = $('#id').val();
+        $.ajax({
+            method: "GET",
+            url: "updatecategorie?cat="+cat+'&id='+id,
+        })
+            .done(function( msg ) {
+                if (msg == 1){
+                    $('.hide').attr('class', 'alert alert-success');
+                    $('.alert-success').html('Changement effectué');
+                 }else{
+                    $('.hide').attr('class', 'alert alert-warning');
+                    $('.alert-warning').html('Problème détecté');
+                }
+
+            });
+    });
+</script>

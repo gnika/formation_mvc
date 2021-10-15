@@ -1,0 +1,92 @@
+
+<form class="form-inline" action="<?php echo WEB_ROOT; ?>/films" method="POST">
+
+        <div class="input-group col-md-12">
+            <input name="titre" value="<?php echo $this->search;?>" type="text" class="form-control input-lg" placeholder="Cherchez un film" />
+            <span class="input-group-btn">
+                            <button class="btn btn-info btn-lg" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </span>
+        </div>
+
+</form>
+<div class="row">
+<div class="col-md-3"><h4>Recherche par catégorie</h4>
+<ul>
+    <?php foreach($this->allCateg as $categ){
+        echo '<li class="list-group-item">
+                <input type="checkbox" id="check_'.$categ->id.'" value="'.$categ->id.'"/> 
+                    <a href="#">
+                        <label for="check_'.$categ->id.'">'.$categ->nom.'</label>
+                    </a>
+               </li>';
+    }?>
+</ul>
+</div>
+<div class="col-md-9">
+    <table class="table table-striped" width="647">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Titre</th>
+            <th>Image</th>
+            <th>Catégories</th>
+            <th>Description</th>
+            <th>Prix</th>
+            <th>Date de sortie</th>
+            <?php if($this->session->role==2){?>
+            <th>Supprimer</th>
+            <th>Editer</th>
+            <?php } ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($this->films as $film) {
+        ?>
+        <tr>
+            <td><?php echo $film->id;?></td>
+            <td><a href="film?id=<?php echo $film->id;?>"><?php echo $film->titre;?></a></td>
+            <td><img width=150 height=150 src="<?php echo WEB_ROOT; ?>/images/film/<?php echo $film->image;?>"/> </td>
+            <td><?php foreach($this->categs[$film->id] as $categ)
+                    echo   $categ->nom.'<br/>';
+                ?>
+            </td>
+            <td><?php echo substr($film->description, 0, 100).'...';?></td>
+            <td><?php echo $film->prix;?>€</td>
+            <td><?php $date = new DateTime($film->date_sortie);
+                echo $date->format('d/m/Y'); ?></td>
+            <?php if($this->session->role==2 ){?>
+            <td><a onclick="return confirm('êtes-vous sûr de vouloir supprimer ce film ?')" href="?iddelete=<?php echo $film->id;?>"><span class="fas fa-trash"></span></a></td>
+            <td><a href="<?php echo WEB_ROOT; ?>/add/film?id=<?php echo $film->id;?>" class="btn btn-primary btn-sm"><span class="fas fa-pencil"></span> Editer </a></td>
+            <?php } ?>
+        </tr>
+        <?php
+        }
+    ?>
+        </tbody>
+    </table>
+
+    <script>
+        $('input[type="checkbox"]').click(function() {
+            checkedArray = new Array;
+            $('input[type="checkbox"]:checked').each(function(){
+                checkedArray.push($(this).val());
+            });
+                $.ajax({
+                    method: "POST",
+                    url: "searchajaxparcategorie",
+                    data: {categ: checkedArray}
+                })
+                    .done(function( msg ) {
+                       $('.col-md-9').html('');
+                       $('.col-md-9').html(msg);
+
+
+                    });
+
+        });
+    </script>
+
+</div>
+</div>
