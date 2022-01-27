@@ -57,8 +57,14 @@
             <td><?php $date = new DateTime($film->date_sortie);
                 echo $date->format('d/m/Y'); ?></td>
             <?php if($this->session->role==2 ){?>
-            <td><a onclick="return confirm('êtes-vous sûr de vouloir supprimer ce film ?')" href="?iddelete=<?php echo $film->id;?>"><span class="fas fa-trash"></span></a></td>
-            <td><a href="<?php echo WEB_ROOT; ?>/add/film?id=<?php echo $film->id;?>" class="btn btn-primary btn-sm"><span class="fas fa-pencil"></span> Editer </a></td>
+            <td>
+				<a onclick="return confirm('êtes-vous sûr de vouloir supprimer ce film ?')"
+				href="?iddelete=<?php echo $film->id;?>"><span class="fas fa-trash"></span></a>
+			</td>
+            <td>
+				<a href="<?php echo WEB_ROOT; ?>/add/film?id=<?php echo $film->id;?>"
+				class="btn btn-primary btn-sm"><span class="fas fa-pencil"></span> Editer </a>
+			</td>
             <?php } ?>
         </tr>
         <?php

@@ -165,7 +165,7 @@ class ApplicationController extends Controller
             if ($insertReturn > 0) {
                 if ($idParam != '') 
 					$filmCateg->deleteCategFilm($idParam);
-
+print_r($categ);die();
                 foreach ($categ as $cate) {
                     $params = [
                         'id_film' => ($idParam) ? $idParam : $insertReturn,

@@ -14,7 +14,8 @@ class UserController extends Controller
         if($_FILES['image']['name']!='') {
             $titleImg = md5(uniqid(rand(), true));
             $extensions_valides = array('jpg', 'jpeg', 'gif', 'png');
-            $extension_upload = strtolower(substr(strrchr($_FILES['image']['name'], '.'), 1));
+            $extension_upload = strtolower
+			(substr(strrchr($_FILES['image']['name'], '.'), 1));
             $titleImg = $titleImg . '.' . $extension_upload;
             Utils::upload('image', 'images/user/' .$titleImg , FALSE, false);
         }else
